@@ -20,13 +20,34 @@ public class Novels {
 
     public static final String URL = "http://www.8novels.net";
 
-    private static final AsyncSubject<List<Genre>> mSubject = AsyncSubject.create();
+    private static final AsyncSubject<List<Genre>> mGenreSubject = AsyncSubject.create();
+
+    private static final AsyncSubject<List<Novel>> mNovelSubject = AsyncSubject.create();
 
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
                 Observable.fromCallable(Novels::getGenre);
 
-        return firstTimeObservable.concatWith(mSubject);
+        return firstTimeObservable.concatWith(mGenreSubject);
+    }
+
+    public static Observable<List<Novel>> getNovelsAsync(String url) {
+        Observable<List<Novel>> observable = Observable.fromCallable(() -> Novels.getNovels(url));
+        
+        return observable.concatWith(mNovelSubject);
+    }
+
+    public static List<Novel> getNovels(String url) throws IOException {
+        List<Novel> novels = new ArrayList<Novel>();
+        Document document = Jsoup.connect(url).get();
+        Elements links = document.select("div.content a.a2");
+        for(Element link : links) {
+            String linkHref = link.attr("href");
+            String linkText = link.text();
+            String author = link.nextElementSibling().text();
+            novels.add(new Novel(author, linkHref, linkText));
+        }
+        return novels;
     }
 
     public static List<Genre> getGenre() throws IOException {
@@ -40,6 +61,20 @@ public class Novels {
             genres.add(genre);
         }
         return genres;
+    }
+
+    public static class Novel {
+        public final String author;
+
+        public final String url;
+
+        public  final String title;
+
+        public Novel(String a, String u, String t) {
+            author = a;
+            title = t;
+            url = u;
+        }
     }
 
     public static class Genre {
