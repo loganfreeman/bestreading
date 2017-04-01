@@ -17,6 +17,8 @@ import education.loganfreeman.com.bestreading.utils.PLog;
 import io.reactivex.Observable;
 import io.reactivex.subjects.AsyncSubject;
 
+import static education.loganfreeman.com.bestreading.utils.StringUtil.safeString;
+
 /**
  * Created by shanhong on 3/30/17.
  */
@@ -65,7 +67,7 @@ public class Novels {
     }
 
     public static Observable<Page> getPageAsync(Genre genre, String page) {
-        String url = Novels.URL + genre.getUrl() + page;
+        String url = Novels.URL + genre.getUrl() + safeString(page);
         PLog.i(url);
         Observable<Page> observable = Observable.fromCallable(() -> new Page(Novels.getNovels(url), page));
 

@@ -22,6 +22,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static education.loganfreeman.com.bestreading.utils.StringUtil.safeString;
+
 /**
  * Created by scheng on 3/31/17.
  */
@@ -73,12 +75,9 @@ public class NovelListActivity extends BaseActivity {
     }
 
     private String getPageUrl() {
-        return Novels.URL + genre.getUrl() + page;
+        return Novels.URL + genre.getUrl() + safeString(page);
     }
-    private String safeString(String s) {
-        if (s == null) return "";
-        return s;
-    }
+
 
     private void initView() {
         safeSetTitle(genre.getTitle());
