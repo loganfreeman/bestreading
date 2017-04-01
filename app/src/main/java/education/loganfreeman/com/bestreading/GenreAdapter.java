@@ -65,7 +65,6 @@ class GenreAdapter extends BaseAdapter {
         public MyViewHolder(View item) {
             tvTitle = (Button) item.findViewById(R.id.tvTitle);
 
-            tvTitle.setOnClickListener((View.OnClickListener) mContext);
         }
     }
 }

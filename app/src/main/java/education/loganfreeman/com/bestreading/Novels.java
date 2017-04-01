@@ -4,6 +4,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class Novels {
 
     public static Observable<List<Novel>> getNovelsAsync(String url) {
         Observable<List<Novel>> observable = Observable.fromCallable(() -> Novels.getNovels(url));
-        
+
         return observable.concatWith(mNovelSubject);
     }
 
@@ -63,36 +65,56 @@ public class Novels {
         return genres;
     }
 
+    @Parcel
     public static class Novel {
-        public final String author;
+        private final String author;
 
-        public final String url;
+        private final String url;
 
-        public  final String title;
+        private final String title;
 
-        public Novel(String a, String u, String t) {
-            author = a;
-            title = t;
-            url = u;
-        }
-    }
-
-    public static class Genre {
-        public  final String title;
-
-        public String url;
-
-        public Genre(String name) {
-            this.title = name;
+        @ParcelConstructor
+        public Novel(String author, String url, String title) {
+            this.author = author;
+            this.title = title;
+            this.url = url;
         }
 
-        public Genre(String t, String u) {
-            this.title = t;
-            this.url = u;
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public String getUrl() {
+            return url;
         }
 
         public String getTitle() {
             return title;
+        }
+    }
+
+    @Parcel
+    public static class Genre {
+        private final String title;
+
+        private String url;
+
+        public Genre(String name) {
+            this.title = name;
+        }
+        @ParcelConstructor
+        public Genre(String title, String url) {
+            this.title = title;
+            this.url = url;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getUrl() {
+            return url;
         }
     }
 }

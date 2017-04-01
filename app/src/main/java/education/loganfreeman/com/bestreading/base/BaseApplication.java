@@ -1,4 +1,4 @@
-package education.loganfreeman.com.bestreading;
+package education.loganfreeman.com.bestreading.base;
 
 import android.app.Application;
 import android.content.Context;

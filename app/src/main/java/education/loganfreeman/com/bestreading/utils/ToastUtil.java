@@ -2,7 +2,7 @@ package education.loganfreeman.com.bestreading.utils;
 
 import android.widget.Toast;
 
-import education.loganfreeman.com.bestreading.BaseApplication;
+import education.loganfreeman.com.bestreading.base.BaseApplication;
 
 /**
  * Created by shanhong on 3/30/17.

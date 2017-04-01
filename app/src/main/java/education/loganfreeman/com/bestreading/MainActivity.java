@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
@@ -33,10 +34,12 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
 
     @BindView(R.id.gridview_genre)
     GridView genreGridView;
+
+    GenreAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,10 @@ public class MainActivity extends AppCompatActivity
         .subscribe(new Consumer<List<Novels.Genre>>() {
             @Override
             public void accept(List<Novels.Genre> genres) throws Exception {
-                genreGridView.setAdapter(new GenreAdapter(MainActivity.this, genres));
+                adapter = new GenreAdapter(MainActivity.this, genres);
+                genreGridView.setAdapter(adapter);
+
+                genreGridView.setOnItemClickListener(MainActivity.this);
             }
         });
 
@@ -139,10 +145,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
-    public void onClick(View v) {
-        if(v instanceof Button) {
-            ToastUtil.showShort(((Button) v).getText().toString());
-        }
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Novels.Genre genre = adapter.getItem(position);
+        ToastUtil.showShort(genre.getUrl());
     }
 }
