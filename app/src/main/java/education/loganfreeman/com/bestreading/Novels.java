@@ -10,6 +10,8 @@ import org.parceler.ParcelConstructor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import education.loganfreeman.com.bestreading.utils.PLog;
 import io.reactivex.Observable;
@@ -22,6 +24,10 @@ import io.reactivex.subjects.AsyncSubject;
 public class Novels {
 
     public static final String URL = "http://www.8novels.net";
+
+    public static final Pattern title_by_author = Pattern.compile("[\\w\\s]+(by [\\w\\s]+)");
+
+    public static final Pattern by_author = Pattern.compile("(by [\\w\\s]+)");
 
     private static final AsyncSubject<List<Genre>> mGenreSubject = AsyncSubject.create();
 
@@ -44,11 +50,20 @@ public class Novels {
     public static List<Novel> getNovels(String url) throws IOException {
         List<Novel> novels = new ArrayList<Novel>();
         Document document = Jsoup.connect(url).get();
-        Elements links = document.select("div.content a.a2");
+        Elements links = document.select("div.content a");
         for(Element link : links) {
             String linkHref = link.attr("href");
             String linkText = link.text();
-            String author = link.nextSibling().outerHtml();
+            String author = link.nextSibling().outerHtml().trim();
+            if(!by_author.matcher(author).matches()) {
+                Matcher matcher = title_by_author.matcher(linkText);
+
+                if(matcher.matches()) {
+                    author = matcher.group(1);
+                }else {
+                    author = "unknown";
+                }
+            }
             Novel novel = new Novel(author, linkHref, linkText);
             //PLog.i(novel.toString());
             novels.add(novel);

@@ -28,11 +28,16 @@ public class NovelListActivity extends BaseActivity {
 
     private List<Novels.Novel> novels;
 
+    private String genre;
+
     private static final String NOVEL_LIST = "novel_list";
 
-    public static void start(Context context, List<Novels.Novel> novels) {
+    private static final String NOVEL_GENRE = "novel_genre";
+
+    public static void start(Context context, List<Novels.Novel> novels, Novels.Genre genre) {
         Intent intent = new Intent(context, NovelListActivity.class);
         intent.putExtra(NOVEL_LIST, Parcels.wrap(novels));
+        intent.putExtra(NOVEL_GENRE, genre.getTitle());
         context.startActivity(intent);
     }
 
@@ -42,12 +47,13 @@ public class NovelListActivity extends BaseActivity {
         setContentView(R.layout.activity_novel_list);
         ButterKnife.bind(this);
         novels = Parcels.unwrap(getIntent().getParcelableExtra(NOVEL_LIST));
+        genre = getIntent().getStringExtra(NOVEL_GENRE);
         initView();
 
     }
 
     private void initView() {
-        safeSetTitle("Novel List");
+        safeSetTitle(genre);
         NovelListAdapter adapter = new NovelListAdapter(this, novels);
         novelListView.setAdapter(adapter);
         novelListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

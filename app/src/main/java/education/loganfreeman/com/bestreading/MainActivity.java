@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
                 .subscribe(new Consumer<List<Novels.Novel>>() {
                     @Override
                     public void accept(List<Novels.Novel> novels) throws Exception {
-                        NovelListActivity.start(MainActivity.this, novels);
+                        NovelListActivity.start(MainActivity.this, novels, genre);
                     }
                 });
     }
