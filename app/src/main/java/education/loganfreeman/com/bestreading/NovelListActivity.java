@@ -16,7 +16,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import education.loganfreeman.com.bestreading.adapter.NovelListAdapter;
 import education.loganfreeman.com.bestreading.base.BaseActivity;
+import education.loganfreeman.com.bestreading.utils.PLog;
 import education.loganfreeman.com.bestreading.utils.ToastUtil;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by scheng on 3/31/17.
@@ -37,14 +41,21 @@ public class NovelListActivity extends BaseActivity {
 
     private Novels.Genre genre;
 
+    private String page;
+
+    private String full_url;
+
     private static final String NOVEL_LIST = "novel_list";
 
     private static final String NOVEL_GENRE = "novel_genre";
 
-    public static void start(Context context, List<Novels.Novel> novels, Novels.Genre genre) {
+    private static final String PAGE_URL = "page_url";
+
+    public static void start(Context context, List<Novels.Novel> novels, Novels.Genre genre, String url) {
         Intent intent = new Intent(context, NovelListActivity.class);
         intent.putExtra(NOVEL_LIST, Parcels.wrap(novels));
         intent.putExtra(NOVEL_GENRE, Parcels.wrap(genre));
+        intent.putExtra(PAGE_URL, url);
         context.startActivity(intent);
     }
 
@@ -55,6 +66,9 @@ public class NovelListActivity extends BaseActivity {
         ButterKnife.bind(this);
         novels = Parcels.unwrap(getIntent().getParcelableExtra(NOVEL_LIST));
         genre = Parcels.unwrap(getIntent().getParcelableExtra(NOVEL_GENRE));
+        page = getIntent().getStringExtra(PAGE_URL);
+        PLog.i("Page " + page);
+        full_url = Novels.URL + genre.getUrl() + page;
         initView();
 
     }
@@ -68,6 +82,40 @@ public class NovelListActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Novels.Novel novel = adapter.getItem(position);
                 ToastUtil.showShort(novel.getUrl());
+            }
+        });
+
+        afterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Novels.Nav theNav = null;
+                Novels.getNavAsync(full_url)
+                        .flatMap((nav) -> Novels.getPageAsync(genre, nav.next))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Novels.Page>() {
+                            @Override
+                            public void accept(Novels.Page page) throws Exception {
+                                NovelListActivity.start(NovelListActivity.this, page.novels, genre, page.page);
+                            }
+                        });
+            }
+        });
+
+        beforeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Novels.Nav theNav = null;
+                Novels.getNavAsync(full_url)
+                        .flatMap((nav) -> Novels.getPageAsync(genre, nav.next))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Novels.Page>() {
+                            @Override
+                            public void accept(Novels.Page page) throws Exception {
+                                NovelListActivity.start(NovelListActivity.this, page.novels, genre, page.page);
+                            }
+                        });
             }
         });
 

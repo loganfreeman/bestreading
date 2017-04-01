@@ -29,7 +29,7 @@ public class Novels {
 
     public static final Pattern title_by_author = Pattern.compile("[\\w\\s]+(by [\\w\\s]+)");
 
-    public static final Pattern by_author = Pattern.compile("(by [\\w\\s]+)");
+    public static final Pattern by_author = Pattern.compile("(by [\\w\\s]+)(.*)");
 
     private static final AsyncSubject<List<Genre>> mGenreSubject = AsyncSubject.create();
 
@@ -39,6 +39,8 @@ public class Novels {
 
     private static final AsyncSubject<Nav> mNavSubject = AsyncSubject.create();
 
+    private static final AsyncSubject<Page> mPageSubject = AsyncSubject.create();
+
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
                 Observable.fromCallable(Novels::getGenre);
@@ -46,11 +48,28 @@ public class Novels {
         return firstTimeObservable.concatWith(mGenreSubject);
     }
 
+    public static class Page {
+        List<Novel> novels;
+        String page;
+        public Page(List<Novel> novels, String url) {
+            this.novels = novels;
+            this.page = url;
+        }
+    }
+
     public static Observable<List<Novel>> getNovelsAsync(String url) {
         PLog.i(url);
         Observable<List<Novel>> observable = Observable.fromCallable(() -> Novels.getNovels(url));
 
         return observable.concatWith(mNovelSubject);
+    }
+
+    public static Observable<Page> getPageAsync(Genre genre, String page) {
+        String url = Novels.URL + genre.getUrl() + page;
+        PLog.i(url);
+        Observable<Page> observable = Observable.fromCallable(() -> new Page(Novels.getNovels(url), page));
+
+        return observable.concatWith(mPageSubject);
     }
 
     public static Observable<List<Author>> getAuthorsAsync() {
