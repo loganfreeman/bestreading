@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -60,10 +61,10 @@ class GenreAdapter extends BaseAdapter {
 
 
     private class MyViewHolder {
-        Button tvTitle;
+        TextView tvTitle;
 
         public MyViewHolder(View item) {
-            tvTitle = (Button) item.findViewById(R.id.tvTitle);
+            tvTitle = (TextView) item.findViewById(R.id.tvTitle);
 
         }
     }
