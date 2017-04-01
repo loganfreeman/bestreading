@@ -150,14 +150,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Novels.Genre genre = adapter.getItem(position);
-        Novels.getNovelsAsync(Novels.URL + genre.getUrl())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Novels.Novel>>() {
-                    @Override
-                    public void accept(List<Novels.Novel> novels) throws Exception {
-                        NovelListActivity.start(MainActivity.this, novels, genre);
-                    }
-                });
+
+        if(genre.getUrl().equals("/authors/")) {
+            Novels.getAuthorsAsync()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<Novels.Author>>() {
+                        @Override
+                        public void accept(List<Novels.Author> authors) throws Exception {
+                            AuthorListActivity.start(MainActivity.this, authors);
+                        }
+                    });
+        }else{
+            Novels.getNovelsAsync(Novels.URL + genre.getUrl())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<Novels.Novel>>() {
+                        @Override
+                        public void accept(List<Novels.Novel> novels) throws Exception {
+                            NovelListActivity.start(MainActivity.this, novels, genre);
+                        }
+                    });
+        }
+
     }
 }

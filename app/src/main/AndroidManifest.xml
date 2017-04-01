@@ -25,6 +25,7 @@
         </activity>
 
         <activity android:name=".NovelListActivity"></activity>
+        <activity android:name=".AuthorListActivity"></activity>
     </application>
 
 </manifest>

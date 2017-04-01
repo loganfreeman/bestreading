@@ -25,6 +25,8 @@ public class Novels {
 
     public static final String URL = "http://www.8novels.net";
 
+    public static final String AUTHOR_URL = "http://www.8novels.net/authors/";
+
     public static final Pattern title_by_author = Pattern.compile("[\\w\\s]+(by [\\w\\s]+)");
 
     public static final Pattern by_author = Pattern.compile("(by [\\w\\s]+)");
@@ -32,6 +34,8 @@ public class Novels {
     private static final AsyncSubject<List<Genre>> mGenreSubject = AsyncSubject.create();
 
     private static final AsyncSubject<List<Novel>> mNovelSubject = AsyncSubject.create();
+
+    private static final AsyncSubject<List<Author>> mAuthorSubject = AsyncSubject.create();
 
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
@@ -45,6 +49,26 @@ public class Novels {
         Observable<List<Novel>> observable = Observable.fromCallable(() -> Novels.getNovels(url));
 
         return observable.concatWith(mNovelSubject);
+    }
+
+    public static Observable<List<Author>> getAuthorsAsync() {
+        Observable<List<Author>> firstTimeObservable =
+                Observable.fromCallable(Novels::getAuthors);
+
+        return firstTimeObservable.concatWith(mAuthorSubject);
+    }
+
+    public static List<Author> getAuthors() throws IOException {
+        List<Author> authors = new ArrayList<Author>();
+        Document document = Jsoup.connect(AUTHOR_URL).get();
+        Elements links = document.select("div.main table td.tb p a");
+        for(Element link : links) {
+            String url = link.attr("href");
+            String name = link.text();
+            Author author = new Author(name, url);
+            authors.add(author);
+        }
+        return authors;
     }
 
     public static List<Novel> getNovels(String url) throws IOException {
@@ -123,9 +147,6 @@ public class Novels {
 
         private String url;
 
-        public Genre(String name) {
-            this.title = name;
-        }
         @ParcelConstructor
         public Genre(String title, String url) {
             this.title = title;
@@ -134,6 +155,28 @@ public class Novels {
 
         public String getTitle() {
             return title;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+
+    @Parcel
+    public static class Author {
+        private final String name;
+
+        private final String url;
+
+        @ParcelConstructor
+        public Author(String name, String url) {
+            this.name = name;
+
+            this.url = url;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public String getUrl() {
