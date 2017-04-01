@@ -37,6 +37,10 @@ public class NovelListAdapter extends BaseAdapter {
         this.inflater = LayoutInflater.from(this.context);
     }
 
+    public void setItems(List<Novel> novels){
+        this.novels = novels;
+    }
+
     @Override
     public int getCount() {
         return novels.size();

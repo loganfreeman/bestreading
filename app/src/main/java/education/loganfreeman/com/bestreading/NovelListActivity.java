@@ -43,13 +43,13 @@ public class NovelListActivity extends BaseActivity {
 
     private String page;
 
-    private String full_url;
-
     private static final String NOVEL_LIST = "novel_list";
 
     private static final String NOVEL_GENRE = "novel_genre";
 
     private static final String PAGE_URL = "page_url";
+
+    private NovelListAdapter adapter;
 
     public static void start(Context context, List<Novels.Novel> novels, Novels.Genre genre, String url) {
         Intent intent = new Intent(context, NovelListActivity.class);
@@ -68,14 +68,21 @@ public class NovelListActivity extends BaseActivity {
         genre = Parcels.unwrap(getIntent().getParcelableExtra(NOVEL_GENRE));
         page = getIntent().getStringExtra(PAGE_URL);
         PLog.i("Page " + page);
-        full_url = Novels.URL + genre.getUrl() + page;
         initView();
 
     }
 
+    private String getPageUrl() {
+        return Novels.URL + genre.getUrl() + page;
+    }
+    private String safeString(String s) {
+        if (s == null) return "";
+        return s;
+    }
+
     private void initView() {
         safeSetTitle(genre.getTitle());
-        NovelListAdapter adapter = new NovelListAdapter(this, novels);
+        adapter = new NovelListAdapter(this, novels);
         novelListView.setAdapter(adapter);
         novelListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -89,14 +96,17 @@ public class NovelListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Novels.Nav theNav = null;
-                Novels.getNavAsync(full_url)
+                Novels.getNavAsync(getPageUrl())
                         .flatMap((nav) -> Novels.getPageAsync(genre, nav.next))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<Novels.Page>() {
                             @Override
                             public void accept(Novels.Page page) throws Exception {
-                                NovelListActivity.start(NovelListActivity.this, page.novels, genre, page.page);
+                                NovelListActivity.this.page = page.page;
+                                NovelListActivity.this.novels = page.novels;
+                                adapter.setItems(page.novels);
+                                adapter.notifyDataSetChanged();
                             }
                         });
             }
@@ -106,14 +116,17 @@ public class NovelListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Novels.Nav theNav = null;
-                Novels.getNavAsync(full_url)
+                Novels.getNavAsync(getPageUrl())
                         .flatMap((nav) -> Novels.getPageAsync(genre, nav.next))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<Novels.Page>() {
                             @Override
                             public void accept(Novels.Page page) throws Exception {
-                                NovelListActivity.start(NovelListActivity.this, page.novels, genre, page.page);
+                                NovelListActivity.this.page = safeString(page.page);
+                                NovelListActivity.this.novels = page.novels;
+                                adapter.setItems(page.novels);
+                                adapter.notifyDataSetChanged();
                             }
                         });
             }
