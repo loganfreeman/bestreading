@@ -16,7 +16,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:layout_alignBottom="@+id/novel_title"
+            android:layout_alignParentBottom="true"
             android:id="@+id/novel_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

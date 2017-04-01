@@ -65,6 +65,10 @@ public class NovelListAdapter extends BaseAdapter {
             mViewHolder = (MyViewHolder) convertView.getTag();
         }
 
+        mViewHolder.author.setText(novel.getAuthor());
+
+        mViewHolder.title.setText(novel.getTitle());
+
         return convertView;
     }
 

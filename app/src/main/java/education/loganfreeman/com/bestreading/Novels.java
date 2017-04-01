@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import education.loganfreeman.com.bestreading.utils.PLog;
 import io.reactivex.Observable;
 import io.reactivex.subjects.AsyncSubject;
 
@@ -34,6 +35,7 @@ public class Novels {
     }
 
     public static Observable<List<Novel>> getNovelsAsync(String url) {
+        PLog.i(url);
         Observable<List<Novel>> observable = Observable.fromCallable(() -> Novels.getNovels(url));
 
         return observable.concatWith(mNovelSubject);
@@ -46,8 +48,10 @@ public class Novels {
         for(Element link : links) {
             String linkHref = link.attr("href");
             String linkText = link.text();
-            String author = link.nextElementSibling().text();
-            novels.add(new Novel(author, linkHref, linkText));
+            String author = link.nextSibling().outerHtml();
+            Novel novel = new Novel(author, linkHref, linkText);
+            //PLog.i(novel.toString());
+            novels.add(novel);
         }
         return novels;
     }
@@ -91,6 +95,10 @@ public class Novels {
 
         public String getTitle() {
             return title;
+        }
+
+        public String toString() {
+            return author + " " + url + " " + title;
         }
     }
 
