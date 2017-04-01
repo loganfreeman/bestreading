@@ -12,6 +12,7 @@ import org.parceler.Parcels;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import education.loganfreeman.com.bestreading.adapter.NovelListAdapter;
 import education.loganfreeman.com.bestreading.base.BaseActivity;
 import education.loganfreeman.com.bestreading.utils.ToastUtil;
@@ -39,6 +40,7 @@ public class NovelListActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_novel_list);
+        ButterKnife.bind(this);
         novels = Parcels.unwrap(getIntent().getParcelableExtra(NOVEL_LIST));
         initView();
 

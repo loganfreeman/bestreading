@@ -150,6 +150,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Novels.Genre genre = adapter.getItem(position);
-        ToastUtil.showShort(genre.getUrl());
+        Novels.getNovelsAsync(Novels.URL + genre.getUrl())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Novels.Novel>>() {
+                    @Override
+                    public void accept(List<Novels.Novel> novels) throws Exception {
+                        NovelListActivity.start(MainActivity.this, novels);
+                    }
+                });
     }
 }
