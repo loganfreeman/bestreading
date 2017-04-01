@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
+import com.lucasurbas.listitemview.ListItemView;
+
 import java.util.List;
 
 import education.loganfreeman.com.bestreading.Novels;
@@ -65,20 +67,18 @@ public class NovelListAdapter extends BaseAdapter {
             mViewHolder = (MyViewHolder) convertView.getTag();
         }
 
-        mViewHolder.author.setText(novel.getAuthor());
+        mViewHolder.listItemView.setTitle(novel.getTitle());
 
-        mViewHolder.title.setText(novel.getTitle());
+        mViewHolder.listItemView.setSubtitle(novel.getAuthor());
 
         return convertView;
     }
 
     private class MyViewHolder {
-        TextView title;
-        TextView author;
+        ListItemView listItemView;
 
         public MyViewHolder(View item, Novel novel) {
-            title = (TextView) item.findViewById(R.id.novel_title);
-            author = (TextView) item.findViewById(R.id.novel_author);
+            listItemView = (ListItemView) item.findViewById(R.id.list_item_view);
         }
     }
 }
