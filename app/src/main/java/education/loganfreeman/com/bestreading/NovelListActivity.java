@@ -116,7 +116,7 @@ public class NovelListActivity extends BaseActivity {
             public void onClick(View v) {
                 Novels.Nav theNav = null;
                 Novels.getNavAsync(getPageUrl())
-                        .flatMap((nav) -> Novels.getPageAsync(genre, nav.next))
+                        .flatMap((nav) -> Novels.getPageAsync(genre, nav.previous))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<Novels.Page>() {

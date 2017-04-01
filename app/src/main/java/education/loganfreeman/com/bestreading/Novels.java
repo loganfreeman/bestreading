@@ -68,7 +68,6 @@ public class Novels {
 
     public static Observable<Page> getPageAsync(Genre genre, String page) {
         String url = Novels.URL + genre.getUrl() + safeString(page);
-        PLog.i(url);
         Observable<Page> observable = Observable.fromCallable(() -> new Page(Novels.getNovels(url), page));
 
         return observable.concatWith(mPageSubject);
