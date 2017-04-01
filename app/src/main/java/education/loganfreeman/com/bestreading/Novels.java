@@ -37,6 +37,8 @@ public class Novels {
 
     private static final AsyncSubject<List<Author>> mAuthorSubject = AsyncSubject.create();
 
+    private static final AsyncSubject<Nav> mNavSubject = AsyncSubject.create();
+
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
                 Observable.fromCallable(Novels::getGenre);
@@ -69,6 +71,39 @@ public class Novels {
             authors.add(author);
         }
         return authors;
+    }
+
+    public static Observable<Nav> getNavAsync(String url) {
+        PLog.i(url);
+        Observable<Nav> observable = Observable.fromCallable(() -> Novels.getNavigationUrl(url));
+
+        return observable.concatWith(mNavSubject);
+    }
+
+    public static Nav getNavigationUrl(String url) throws IOException {
+        Nav nav = new Nav();
+
+        Document document = Jsoup.connect(url).get();
+
+        Elements links = document.select("ul.pagelist li a");
+
+        for(Element link : links) {
+            String href = link.attr("href");
+            String text = link.text();
+            if("Previous".equals(text)) {
+                nav.previous = href;
+            }else if("Next".equals(text)) {
+                nav.next = href;
+            }
+        }
+
+        return nav;
+    }
+
+    @Parcel
+    public static class Nav {
+        String previous = null;
+        String next = null;
     }
 
     public static List<Novel> getNovels(String url) throws IOException {
