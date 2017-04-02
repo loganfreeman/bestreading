@@ -60,6 +60,7 @@ public class NovelDetailActivity extends BaseActivity {
     }
 
     private void initView() {
+        safeSetTitle(genre.getTitle());
         Novels.getArticleAsync(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

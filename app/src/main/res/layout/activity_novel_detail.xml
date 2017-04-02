@@ -10,7 +10,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:fontFamily="cursive"
+        android:fontFamily="casual"
         android:textColor="@color/colorAccent"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -31,7 +31,7 @@
             android:id="@+id/novel_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="cursive"
+            android:fontFamily="casual"
             android:textSize="18sp"
             android:typeface="monospace" />
 
