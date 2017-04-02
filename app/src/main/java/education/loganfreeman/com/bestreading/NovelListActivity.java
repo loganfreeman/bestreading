@@ -87,7 +87,8 @@ public class NovelListActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Novels.Novel novel = adapter.getItem(position);
-                ToastUtil.showShort(novel.getUrl());
+                //ToastUtil.showShort(novel.getUrl());
+                NovelDetailActivity.start(NovelListActivity.this, genre, novel.getFullUrl());
             }
         });
 

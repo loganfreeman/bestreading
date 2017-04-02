@@ -43,6 +43,8 @@ public class Novels {
 
     private static final AsyncSubject<Page> mPageSubject = AsyncSubject.create();
 
+    private static final AsyncSubject<Article> mArticleSubject = AsyncSubject.create();
+
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
                 Observable.fromCallable(Novels::getGenre);
@@ -78,6 +80,29 @@ public class Novels {
                 Observable.fromCallable(Novels::getAuthors);
 
         return firstTimeObservable.concatWith(mAuthorSubject);
+    }
+
+    public static Observable<Article> getArticleAsync(String url) {
+        Observable<Article> firstTimeObservable =
+                Observable.fromCallable(() -> Novels.getArticle(url));
+
+        return firstTimeObservable.concatWith(mArticleSubject);
+    }
+
+    public static Article getArticle(String url) throws IOException {
+        Document document = Jsoup.connect(url).get();
+        String h1 = document.select("div#Article h1").first().text();
+        List<String> text = new ArrayList<String>();
+        Elements elements = document.select("div#Article div.text p");
+        for(Element p : elements) {
+            if(p.children().size() > 0 && p.child(0).is("script")){
+
+            }else{
+                text.add(p.text());
+            }
+        }
+        Article article = new Article(text, h1);
+        return article;
     }
 
     public static List<Author> getAuthors() throws IOException {
@@ -187,6 +212,10 @@ public class Novels {
             return url;
         }
 
+        public String getFullUrl() {
+            return URL + this.url;
+        }
+
         public String getTitle() {
             return title;
         }
@@ -236,6 +265,38 @@ public class Novels {
 
         public String getUrl() {
             return url;
+        }
+    }
+
+    @Parcel
+    public static class Article {
+        private final List<String> text;
+        private final String h1;
+
+        @ParcelConstructor
+        public Article(List<String> text, String h1){
+            this.text = text;
+            this.h1 = h1;
+        }
+
+        public List<String> getText() {
+            return text;
+        }
+
+        public String getH1() {
+            return h1;
+        }
+
+        public String getHtml() {
+            StringBuilder sb = new StringBuilder();
+            for(String s : text) {
+                sb.append("<p>");
+                sb.append(s);
+                sb.append("</p>");
+
+            }
+
+            return sb.toString();
         }
     }
 }

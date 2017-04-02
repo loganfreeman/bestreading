@@ -26,6 +26,7 @@
 
         <activity android:name=".NovelListActivity"></activity>
         <activity android:name=".AuthorListActivity"></activity>
+        <activity android:name=".NovelDetailActivity"></activity>
     </application>
 
 </manifest>
