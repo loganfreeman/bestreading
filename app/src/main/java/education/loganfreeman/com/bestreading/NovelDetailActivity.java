@@ -7,7 +7,11 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.text.Html;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,9 +22,11 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import education.loganfreeman.com.bestreading.base.BaseActivity;
 import education.loganfreeman.com.bestreading.speech.Speaker;
 import education.loganfreeman.com.bestreading.utils.PLog;
+import education.loganfreeman.com.bestreading.utils.StringUtil;
 import education.loganfreeman.com.bestreading.utils.ToastUtil;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -49,10 +55,22 @@ public class NovelDetailActivity extends BaseActivity {
     TextView text;
 
     @BindView(R.id.action_play)
-    FloatingActionButton playBtn;
+    Button playBtn;
 
     @BindView(R.id.action_pause)
-    FloatingActionButton pauseBtn;
+    Button pauseBtn;
+
+    @BindView(R.id.btn_first)
+    Button firstBtn;
+
+    @BindView(R.id.btn_next)
+    Button nextBtn;
+
+    @BindView(R.id.btn_previous)
+    Button previousBtn;
+
+    @BindView(R.id.btn_last)
+    Button lastBtn;
 
     private final int CHECK_CODE = 0x1;
     private final int LONG_DURATION = 5000;
@@ -81,6 +99,118 @@ public class NovelDetailActivity extends BaseActivity {
 
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_novel_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.next:
+                gotoNext();
+                break;
+            case R.id.previous:
+                gotoPrevious();
+                break;
+            case R.id.first:
+                gotoFirst();
+                break;
+            case R.id.last:
+                gotoLast();
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private String newUrl(String path) {
+        if(path == null) return url;
+        if(url.endsWith(".html")) {
+            return StringUtil.replace(url, path);
+        }
+        return url + path;
+    }
+
+    @OnClick(R.id.btn_next)
+    public  void gotoNext() {
+        Novels.getNavAsync(url)
+                .flatMap((nav) -> {
+                    url = newUrl(nav.next);
+                    return Novels.getArticleAsync(url);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Novels.Article>() {
+                    @Override
+                    public void accept(Novels.Article article) throws Exception {
+                        mArticle = article;
+                        header.setText(mArticle.getH1());
+                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                    }
+                });
+    }
+
+    @OnClick(R.id.btn_previous)
+    public void gotoPrevious() {
+        Novels.getNavAsync(url)
+                .flatMap((nav) -> {
+                    url = newUrl(nav.previous);
+                    return Novels.getArticleAsync(url);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Novels.Article>() {
+                    @Override
+                    public void accept(Novels.Article article) throws Exception {
+                        mArticle = article;
+                        header.setText(mArticle.getH1());
+                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                    }
+                });
+    }
+
+    @OnClick(R.id.btn_first)
+    public void gotoFirst() {
+        Novels.getNavAsync(url)
+                .flatMap((nav) -> {
+                    url = newUrl(nav.first);
+                    return Novels.getArticleAsync(url);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Novels.Article>() {
+                    @Override
+                    public void accept(Novels.Article article) throws Exception {
+                        mArticle = article;
+                        header.setText(mArticle.getH1());
+                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                    }
+                });
+    }
+
+    @OnClick(R.id.btn_last)
+    public void gotoLast() {
+        Novels.getNavAsync(url)
+                .flatMap((nav) -> {
+                    url = newUrl(nav.last);
+                    return Novels.getArticleAsync(url);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Novels.Article>() {
+                    @Override
+                    public void accept(Novels.Article article) throws Exception {
+                        mArticle = article;
+                        header.setText(mArticle.getH1());
+                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                    }
+                });
     }
     @Override
     public void onPause(){
@@ -135,30 +265,26 @@ public class NovelDetailActivity extends BaseActivity {
         }
     }
 
+    @OnClick(R.id.action_play)
+    public void play(View view) {
+        String toSpeak = text.getText().toString();
+        //Toast.makeText(getApplicationContext(), toSpeak,Toast.LENGTH_SHORT).show();
+        String lines[] = toSpeak.split("\\r?\\n");
+        for(String line : lines) {
+            speaker.speak(line);
+        }
+    }
+
+    @OnClick(R.id.action_pause)
+    public void pause(View view) {
+        speaker.pause(LONG_DURATION);
+    }
+
     private void initView() {
         safeSetTitle(genre.getTitle());
         playBtn.setEnabled(false);
         pauseBtn.setEnabled(false);
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String toSpeak = text.getText().toString();
-                //Toast.makeText(getApplicationContext(), toSpeak,Toast.LENGTH_SHORT).show();
-                String lines[] = toSpeak.split("\\r?\\n");
-                for(String line : lines) {
-                    speaker.speak(line);
-                }
 
-            }
-        });
-        pauseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speaker.pause(LONG_DURATION);
-            }
-
-
-        });
         Novels.getArticleAsync(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

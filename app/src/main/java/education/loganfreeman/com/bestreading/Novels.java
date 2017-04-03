@@ -139,6 +139,10 @@ public class Novels {
                 nav.previous = href;
             }else if("Next".equals(text)) {
                 nav.next = href;
+            }else if("Last Page".equals(text)) {
+                nav.last = href;
+            }else if("First Page".equals(text)) {
+                nav.first = href;
             }
         }
 
@@ -147,8 +151,10 @@ public class Novels {
 
     @Parcel
     public static class Nav {
+        String first = null;
         String previous = null;
         String next = null;
+        String last = null;
     }
 
     public static List<Novel> getNovels(String url) throws IOException {

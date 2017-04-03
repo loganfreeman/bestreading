@@ -53,7 +53,6 @@ public class Speaker implements TextToSpeech.OnInitListener {
             // locale
             tts.setLanguage(Locale.US);
             ready = true;
-            ToastUtil.showShort("Speaker ready!");
 
         }else{
             ready = false;

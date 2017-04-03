@@ -8,71 +8,119 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:layout_gravity="top|center"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/novel_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:fontFamily="casual"
-            android:textColor="@color/colorAccent"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:typeface="monospace" />
+        <LinearLayout
+            android:id="@+id/novel_nav_actions"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="2dip"
-            android:background="#FF00FF00" />
+            <Button
+                android:text="First"
+                android:id="@+id/btn_first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:drawableLeft="@drawable/ic_action_next"
+                android:text="Next"
+                android:id="@+id/btn_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:drawableLeft="@drawable/ic_action_before"
+                android:text="Previous"
+                android:id="@+id/btn_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
 
-        <ScrollView
+
+            <Button
+                android:text="Last"
+                android:id="@+id/btn_last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/novel_speech_actions"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
 
+            <Button
+                android:drawableLeft="@drawable/ic_play_arrow_black_24dp"
+                android:text="Play"
+                android:id="@+id/action_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:drawableLeft="@drawable/ic_pause_black_24dp"
+                android:text="Pause"
+                android:id="@+id/action_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <TextView
+                android:id="@+id/novel_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:id="@+id/novel_textview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:fontFamily="casual"
-                android:textSize="18sp"
+                android:textColor="@color/colorAccent"
+                android:textSize="24sp"
+                android:textStyle="bold"
                 android:typeface="monospace" />
 
-        </ScrollView>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dip"
+                android:background="#FF00FF00" />
 
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/novel_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="casual"
+                    android:textSize="18sp"
+                    android:typeface="monospace" />
+
+            </ScrollView>
+
+
+
+        </LinearLayout>
 
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/action_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_play_arrow_black_24dp" />
 
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/action_pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginBottom="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:src="@drawable/ic_pause_black_24dp"
-        app:layout_anchor="@id/action_play"
-        app:layout_anchorGravity="top" />
 </android.support.design.widget.CoordinatorLayout>
