@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.text.Html;
 import android.view.View;
@@ -108,6 +109,22 @@ public class NovelDetailActivity extends BaseActivity {
         if(requestCode == CHECK_CODE){
             if(resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS){
                 speaker = new Speaker(this);
+                speaker.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
                 playBtn.setEnabled(true);
                 pauseBtn.setEnabled(true);
             }else {
