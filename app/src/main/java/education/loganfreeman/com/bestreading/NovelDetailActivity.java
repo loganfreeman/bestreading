@@ -78,6 +78,8 @@ public class NovelDetailActivity extends BaseActivity {
 
     private Speaker speaker;
 
+    String lines[];
+
 
     public static void start(Context context, Novels.Genre genre, String url) {
         Intent intent = new Intent(context, NovelDetailActivity.class);
@@ -247,7 +249,7 @@ public class NovelDetailActivity extends BaseActivity {
 
                     @Override
                     public void onDone(String utteranceId) {
-
+                        PLog.i(lines[Integer.valueOf(utteranceId.replace("line", ""))]);
                     }
 
                     @Override
@@ -269,9 +271,10 @@ public class NovelDetailActivity extends BaseActivity {
     public void play(View view) {
         String toSpeak = text.getText().toString();
         //Toast.makeText(getApplicationContext(), toSpeak,Toast.LENGTH_SHORT).show();
-        String lines[] = toSpeak.split("\\r?\\n");
+        lines = toSpeak.split("\\r?\\n");
+        int id = 1;
         for(String line : lines) {
-            speaker.speak(line);
+            speaker.speak(line, "line" + id++);
         }
     }
 
