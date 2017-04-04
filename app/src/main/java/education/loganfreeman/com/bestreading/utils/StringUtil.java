@@ -1,5 +1,9 @@
 package education.loganfreeman.com.bestreading.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created by scheng on 4/1/17.
  */
@@ -24,5 +28,21 @@ public class StringUtil {
         String[] parts = url.split("/");
         parts[parts.length-1] = path;
         return join(parts, "/");
+    }
+
+    public static String makeSHA1Hash(String input)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException
+    {
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+        md.reset();
+        byte[] buffer = input.getBytes("UTF-8");
+        md.update(buffer);
+        byte[] digest = md.digest();
+
+        String hexStr = "";
+        for (int i = 0; i < digest.length; i++) {
+            hexStr +=  Integer.toString( ( digest[i] & 0xff ) + 0x100, 16).substring( 1 );
+        }
+        return hexStr;
     }
 }
