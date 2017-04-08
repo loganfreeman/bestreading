@@ -99,11 +99,12 @@
 
 
             <ScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
 
-                <TextView
+                <org.sufficientlysecure.htmltextview.HtmlTextView
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:id="@+id/novel_textview"

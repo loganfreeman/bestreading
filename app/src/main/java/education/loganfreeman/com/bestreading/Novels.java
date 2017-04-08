@@ -304,5 +304,23 @@ public class Novels {
 
             return sb.toString();
         }
+
+        public String getHighlightedHtml(int highlighted){
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for(String s : text) {
+                sb.append("<p>");
+                if(i == highlighted) {
+                    sb.append("<font color='red'>"+s+"</font>");
+                }else{
+                    sb.append(s);
+                }
+                sb.append("</p>");
+                i++;
+
+            }
+
+            return sb.toString();
+        }
     }
 }

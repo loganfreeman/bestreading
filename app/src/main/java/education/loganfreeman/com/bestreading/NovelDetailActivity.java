@@ -5,20 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.design.widget.FloatingActionButton;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.parceler.Parcels;
-
-import java.util.List;
-import java.util.Locale;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +24,6 @@ import education.loganfreeman.com.bestreading.base.BaseActivity;
 import education.loganfreeman.com.bestreading.speech.Speaker;
 import education.loganfreeman.com.bestreading.utils.PLog;
 import education.loganfreeman.com.bestreading.utils.StringUtil;
-import education.loganfreeman.com.bestreading.utils.ToastUtil;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -52,7 +48,7 @@ public class NovelDetailActivity extends BaseActivity {
     TextView header;
 
     @BindView(R.id.novel_textview)
-    TextView text;
+    HtmlTextView htmlTextView;
 
     @BindView(R.id.action_play)
     Button playBtn;
@@ -71,6 +67,9 @@ public class NovelDetailActivity extends BaseActivity {
 
     @BindView(R.id.btn_last)
     Button lastBtn;
+
+    @BindView(R.id.scrollView)
+    ScrollView scrollView;
 
     private final int CHECK_CODE = 0x1;
     private final int LONG_DURATION = 5000;
@@ -139,6 +138,12 @@ public class NovelDetailActivity extends BaseActivity {
         return url + path;
     }
 
+    private void setArticle(Novels.Article article) {
+        mArticle = article;
+        header.setText(mArticle.getH1());
+        htmlTextView.setHtml(mArticle.getHtml());
+    }
+
     @OnClick(R.id.btn_next)
     public  void gotoNext() {
         Novels.getNavAsync(url)
@@ -151,9 +156,7 @@ public class NovelDetailActivity extends BaseActivity {
                 .subscribe(new Consumer<Novels.Article>() {
                     @Override
                     public void accept(Novels.Article article) throws Exception {
-                        mArticle = article;
-                        header.setText(mArticle.getH1());
-                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                        setArticle(article);
                     }
                 });
     }
@@ -170,9 +173,7 @@ public class NovelDetailActivity extends BaseActivity {
                 .subscribe(new Consumer<Novels.Article>() {
                     @Override
                     public void accept(Novels.Article article) throws Exception {
-                        mArticle = article;
-                        header.setText(mArticle.getH1());
-                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                        setArticle(article);
                     }
                 });
     }
@@ -189,9 +190,7 @@ public class NovelDetailActivity extends BaseActivity {
                 .subscribe(new Consumer<Novels.Article>() {
                     @Override
                     public void accept(Novels.Article article) throws Exception {
-                        mArticle = article;
-                        header.setText(mArticle.getH1());
-                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                        setArticle(article);
                     }
                 });
     }
@@ -208,9 +207,7 @@ public class NovelDetailActivity extends BaseActivity {
                 .subscribe(new Consumer<Novels.Article>() {
                     @Override
                     public void accept(Novels.Article article) throws Exception {
-                        mArticle = article;
-                        header.setText(mArticle.getH1());
-                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                        setArticle(article);
                     }
                 });
     }
@@ -236,6 +233,17 @@ public class NovelDetailActivity extends BaseActivity {
         startActivityForResult(check, CHECK_CODE);
     }
 
+    private void scrollTo(int line) {
+        htmlTextView.setHtml(mArticle.getHighlightedHtml(line+1));
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                int y = htmlTextView.getLayout().getLineTop(line);
+                scrollView.scrollTo(0, y);
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CHECK_CODE){
@@ -249,7 +257,9 @@ public class NovelDetailActivity extends BaseActivity {
 
                     @Override
                     public void onDone(String utteranceId) {
-                        PLog.i(lines[Integer.valueOf(utteranceId.replace("line", ""))]);
+                        int line = Integer.valueOf(utteranceId.replace("line", ""));
+                        // PLog.i(lines[line]);
+
                     }
 
                     @Override
@@ -269,7 +279,7 @@ public class NovelDetailActivity extends BaseActivity {
 
     @OnClick(R.id.action_play)
     public void play(View view) {
-        String toSpeak = text.getText().toString();
+        String toSpeak = htmlTextView.getText().toString();
         //Toast.makeText(getApplicationContext(), toSpeak,Toast.LENGTH_SHORT).show();
         lines = toSpeak.split("\\r?\\n");
         int id = 1;
@@ -294,9 +304,7 @@ public class NovelDetailActivity extends BaseActivity {
                 .subscribe(new Consumer<Novels.Article>() {
                     @Override
                     public void accept(Novels.Article article) throws Exception {
-                        mArticle = article;
-                        header.setText(mArticle.getH1());
-                        text.setText(Html.fromHtml(mArticle.getHtml()));
+                        setArticle(article);
                     }
                 });
     }
