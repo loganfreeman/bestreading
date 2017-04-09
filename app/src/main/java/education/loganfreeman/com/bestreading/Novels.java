@@ -8,6 +8,8 @@ import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,6 +19,7 @@ import education.loganfreeman.com.bestreading.utils.PLog;
 import io.reactivex.Observable;
 import io.reactivex.subjects.AsyncSubject;
 
+import static education.loganfreeman.com.bestreading.R.id.first;
 import static education.loganfreeman.com.bestreading.utils.StringUtil.safeString;
 
 /**
@@ -44,6 +47,36 @@ public class Novels {
     private static final AsyncSubject<Page> mPageSubject = AsyncSubject.create();
 
     private static final AsyncSubject<Article> mArticleSubject = AsyncSubject.create();
+
+    private static final AsyncSubject<List<Series>> mSeriesSubject = AsyncSubject.create();
+
+    public static String getAuthorHomePage(String author) throws IOException {
+        String query = null;
+        try {
+            query = "http://www.google.com/search?q=" + URLEncoder.encode(author, "UTF-8");
+            PLog.i(query);
+        } catch (UnsupportedEncodingException e) {
+
+        }
+
+
+        Document document = Jsoup.connect(query).get();
+
+        Element link = document.select("._NId h3 a").first();
+
+        PLog.i(link.text());
+
+
+        String url = link.attr("href");
+
+        return url;
+
+    }
+
+    public static Observable<String> getAuthorHomePageAsync(String author) {
+            return    Observable.fromCallable(() -> Novels.getAuthorHomePage(author));
+
+    }
 
     public static Observable<List<Genre>> getGenreAsync() {
         Observable<List<Genre>> firstTimeObservable =
@@ -147,6 +180,44 @@ public class Novels {
         }
 
         return nav;
+    }
+
+    public static Observable<List<Series>> getSeriesAsync(String url) {
+        PLog.i(url);
+        Observable<List<Series>> observable = Observable.fromCallable(() -> Novels.getSeries(url));
+
+        return observable.concatWith(mSeriesSubject);
+    }
+
+    public static List<Series> getSeries(String url) throws IOException {
+        List<Series> seriesList = new ArrayList<Series>();
+
+        Document document = Jsoup.connect(url).get();
+
+        Elements rows = document.select("div#Article table tbody tr");
+
+        for(Element row : rows) {
+            Elements tds = row.select("td");
+            if(tds.size() != 2) {
+                continue;
+            }
+            Element first = tds.get(0);
+            Element second = tds.get(1);
+            String imageUrl = first.select("img").first().attr("src");
+            String bookUrl = first.select("a").first().attr("href");
+            String title = second.select("font").first().text();
+            String text = second.select("div").first().text();
+            Series series = new Series(imageUrl, bookUrl, title, text);
+
+            seriesList.add(series);
+
+
+
+        }
+
+        return seriesList;
+
+
     }
 
     @Parcel
@@ -321,6 +392,46 @@ public class Novels {
             }
 
             return sb.toString();
+        }
+    }
+
+    @Parcel
+    public static class Series {
+        private String imageUrl;
+
+        private String bookUrl;
+
+        private String title;
+
+        private String text;
+
+
+        @ParcelConstructor
+        public Series(String imageUrl, String bookUrl, String title, String text) {
+
+            this.imageUrl = imageUrl;
+
+            this.bookUrl = bookUrl;
+
+            this.title = title;
+
+            this.text = text;
+        }
+
+        public String getImageUrl() {
+            return imageUrl;
+        }
+
+        public String getBookUrl() {
+            return bookUrl;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getText() {
+            return text;
         }
     }
 }
